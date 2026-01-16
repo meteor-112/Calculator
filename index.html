@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>簡易計算機</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-size: 24px;
+      }
+
+      body {
+        background-color: #f6e4cb;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .box {
+        background-color: #f5f4ef;
+        padding: 12px 20px 20px;
+        border: 2px solid white;
+        border-radius: 20px;
+        box-shadow: 2px 2px 10px rgb(45, 45, 45);
+      }
+
+      .title {
+        color: #6494e7;
+        font-size: 28px;
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid black;
+        padding-bottom: 4px;
+      }
+
+      .formula {
+        display: flex;
+        align-items: center;
+        margin: 0 0 20px 0;
+        font-weight: bold;
+      }
+
+      .box-1 {
+        display: flex;
+        align-items: center;
+        margin: 0 10px 0 0;
+      }
+
+      .ans {
+        min-height: 42px;
+        display: flex;
+        gap: 10px;
+        align-content: center;
+      }
+
+      input {
+        width: 100px;
+        border: none;
+        border-radius: 12px;
+        padding: 4px;
+        text-align: center;
+      }
+
+      input:focus-visible {
+        outline: 2px solid #5d86ce;
+      }
+
+      .operator {
+        width: 30px;
+        margin: 0 5px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 28px;
+      }
+      .result {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 80px;
+        margin: 0 5px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 28px;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      /* 藍色 */
+      .result {
+        color: #6494e7;
+      }
+
+      /* 紅色 */
+      .red {
+        color: #f189ad;
+      }
+
+      .buttons {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      button {
+        background-color: #6494e7;
+        color: white;
+        /* font-size: 26px; */
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: none;
+      }
+
+      button:hover {
+        cursor: pointer;
+        background-color: #5d86ce;
+      }
+
+      .function {
+        display: grid;
+      }
+
+      #reset {
+        background-color: #f18a9d;
+      }
+
+      #reset:hover {
+        background-color: #e87c90;
+      }
+
+      .equal {
+        display: flex;
+        align-items: center;
+      }
+
+      @media (max-width: 576px) {
+        .formula {
+          flex-direction: column;
+        }
+
+        .box-1 {
+          margin: 0 0 10px 0;
+        }
+
+        .buttons {
+          gap: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="box">
+        <div class="title">簡易計算機</div>
+        <div class="formula">
+          <div class="box-1">
+            <input
+              type="number"
+              name="number"
+              placeholder="數字1"
+              v-model="number1"
+            />
+            <div class="operator">{{ operator }}</div>
+            <input
+              type="number"
+              name="number"
+              placeholder="數字2"
+              v-model="number2"
+            />
+          </div>
+
+          <div class="ans">
+            <div class="equal">=</div>
+            <div class="result" :class="color">{{ result }}</div>
+          </div>
+        </div>
+        <div class="buttons">
+          <button type="button" name="btn" @click="plus">+</button>
+          <button type="button" name="btn" @click="minus">-</button>
+          <button type="button" name="btn" @click="mult">×</button>
+          <button type="button" name="btn" @click="divid">÷</button>
+          <button type="button" name="btn" @click="calc">calc</button>
+        </div>
+        <div class="function">
+          <button type="button" name="btn" id="reset" @click="reset">
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 引入Vue的cdn -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script>
+      const { createApp, ref } = Vue;
+
+      const app = createApp({
+        setup() {
+          const number1 = ref("");
+          const number2 = ref("");
+          const operator = ref("");
+          const result = ref("");
+          const color = ref("blue");
+          let total = ref(0);
+
+          // 顯示運算子
+          const plus = () => (operator.value = "+");
+          const minus = () => (operator.value = "-");
+          const mult = () => (operator.value = "×");
+          const divid = () => (operator.value = "÷");
+
+          // 計算
+          const calc = () => {
+            // 檢查是否輸入數字
+            if (number1.value === "" || number2.value === "") {
+              result.value = "請輸入數字";
+              color.value = "red";
+              return; //停止
+            }
+            // 判斷運算子再計算
+            switch (operator.value) {
+              case "+":
+                total = number1.value + number2.value; //算式
+                result.value = formatNumber(total); //小數點
+                negative(); //顏色
+                break;
+              case "-":
+                total = number1.value - number2.value;
+                result.value = formatNumber(total);
+                negative();
+                break;
+              case "×":
+                total = number1.value * number2.value;
+                result.value = formatNumber(total);
+                negative();
+                break;
+              case "÷":
+                // 檢查：不可除以0
+                if (number2.value === 0) {
+                  result.value = "不能除以0";
+                  color.value = "red";
+                  return; //停止
+                } else {
+                  total = number1.value / number2.value;
+                  result.value = formatNumber(total);
+                }
+                negative();
+                break;
+              default: //未選擇運算子時
+                result.value = "請先選擇運算子";
+                color.value = "red";
+                break;
+            }
+          };
+
+          // 負值顯示紅色
+          const negative = () => {
+            if (result.value < 0) {
+              color.value = "red";
+            } else {
+              color.value = "result";
+            }
+          };
+
+          //小數最多為2位，整數不顯示
+          const formatNumber = (num) => {
+            return Number.isInteger(num) //判斷是否為整數
+              ? num
+              : Number(num.toFixed(2));
+          };
+
+          // 重置
+          const reset = () => {
+            number1.value = "";
+            number2.value = "";
+            operator.value = "";
+            result.value = "";
+          };
+
+          return {
+            number1,
+            number2,
+            operator,
+            result,
+            color,
+            plus,
+            minus,
+            mult,
+            divid,
+            calc,
+            reset,
+          };
+        },
+      });
+      app.mount("#app");
+    </script>
+  </body>
+</html>
