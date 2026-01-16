@@ -1,7 +1,7 @@
 # Calculator
 上課作業-使用Vue 製作的簡易計算機
 ## Screenshot
-![preview](./screenshot.png)
+![preview](./screenShot.png)
 
 ## Features
 - 可以進行簡易四則運算
